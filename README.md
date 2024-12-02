@@ -1,7 +1,4 @@
-## StayFlow, by Srcbook
-
-This app was created using https://srcbook.com.
-Need help or want to join the community? Join our [Discord](https://discord.gg/shDEGBSe2d).
+## StayFlow
 
 To run the devserver:
 ```
