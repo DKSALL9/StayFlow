@@ -65,25 +65,32 @@ const MOCK_PROPERTIES: Property[] = [
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [allProperties, setAllProperties] = useState<Property[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
+    // Initialize properties with MOCK_PROPERTIES and any user-added properties
     const savedProperties = localStorage.getItem('properties');
     const userProperties = savedProperties ? JSON.parse(savedProperties) : [];
-    setProperties([...MOCK_PROPERTIES, ...userProperties]);
+    const combinedProperties = [...MOCK_PROPERTIES, ...userProperties];
+    setAllProperties(combinedProperties);
+    setProperties(combinedProperties);
   }, []);
+
+  useEffect(() => {
+    // Filter properties based on searchQuery
+    const filtered = allProperties.filter(
+      (property) =>
+        property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        property.location.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setProperties(filtered);
+  }, [searchQuery, allProperties]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    const allProperties = [...MOCK_PROPERTIES, ...properties];
-    const filtered = allProperties.filter(
-      (property) =>
-        property.title.toLowerCase().includes(query.toLowerCase()) ||
-        property.location.toLowerCase().includes(query.toLowerCase())
-    );
-    setProperties(filtered);
   };
 
   const handleAddProperty = (newProperty: Property) => {
@@ -91,7 +98,8 @@ export default function Home() {
     const existingProperties = savedProperties ? JSON.parse(savedProperties) : [];
     const updatedProperties = [...existingProperties, newProperty];
     localStorage.setItem('properties', JSON.stringify(updatedProperties));
-    setProperties([...MOCK_PROPERTIES, ...updatedProperties]);
+    const combinedProperties = [...MOCK_PROPERTIES, ...updatedProperties];
+    setAllProperties(combinedProperties);
     setIsCreateModalOpen(false);
   };
 
